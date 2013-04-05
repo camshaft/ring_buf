@@ -1,0 +1,9 @@
+#!/usr/bin/env escript
+
+%%! -pa ./ebin -pa ./test
+
+main([])->
+  main(["10000000"]);
+main([Limit])->
+  Count = list_to_integer(Limit),
+  ring_buf_benchmark:test(Count).

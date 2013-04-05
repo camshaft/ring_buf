@@ -20,6 +20,17 @@ loop(#state{table=Tid, size=Size, pos=Pos}=State)->
       ets:insert(Tid, {LocalPos, Data}),
       From ! {ok, LocalPos},
       loop(State#state{pos=Pos+1});
+    {add_all, List, From} when List == [] ->
+      From ! {ok, []},
+      loop(State);
+    {add_all, List, From} ->
+      LocalPos = Pos rem Size,
+      Length = length(List),
+      Ids = lists:seq(LocalPos, Length+LocalPos-1),
+      Items = lists:zip(Ids, List),
+      ets:insert(Tid, Items),
+      From ! {ok, Ids},
+      loop(State#state{pos=Pos+Length});
     _ ->
       loop(State)
   end.
